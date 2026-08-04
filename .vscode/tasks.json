@@ -1,0 +1,39 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "C: Programm bauen",
+      "type": "shell",
+      "command": "make",
+      "args": [
+        "build"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": [
+        "$gcc"
+      ]
+    },
+    {
+      "label": "C: Programm ausführen",
+      "type": "shell",
+      "command": "make",
+      "args": [
+        "run"
+      ],
+      "dependsOn": "C: Programm bauen",
+      "problemMatcher": []
+    },
+    {
+      "label": "C: Aufräumen",
+      "type": "shell",
+      "command": "make",
+      "args": [
+        "clean"
+      ],
+      "problemMatcher": []
+    }
+  ]
+}

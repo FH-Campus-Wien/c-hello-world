@@ -1,0 +1,21 @@
+{
+  "name": "C Hello World",
+  "image": "mcr.microsoft.com/devcontainers/cpp:1-debian-12",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-vscode.cpptools"
+      ],
+      "settings": {
+        "C_Cpp.default.cStandard": "c17",
+        "C_Cpp.default.compilerPath": "/usr/bin/gcc",
+        "editor.formatOnSave": true,
+        "editor.insertSpaces": true,
+        "editor.tabSize": 4,
+        "files.insertFinalNewline": true,
+        "files.trimTrailingWhitespace": true
+      }
+    }
+  },
+  "remoteUser": "vscode"
+}
