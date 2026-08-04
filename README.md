@@ -9,6 +9,8 @@ Das Projekt wird in einem Dev Container ausgeführt. Dadurch stehen auf Windows,
 - Make als Build-Werkzeug
 - Microsoft C/C++ Extension für IntelliSense und Debugging
 
+Der Container basiert auf einem schlanken Debian-Image und installiert gezielt nur die für den C-Grundlagenkurs benötigte Toolchain. Beim ersten Öffnen wird das Image einmalig erstellt und anschließend lokal wiederverwendet.
+
 ## Voraussetzungen
 
 - [Visual Studio Code](https://code.visualstudio.com/)
@@ -72,7 +74,8 @@ make --version
 ```text
 .
 ├── .devcontainer/
-│   └── devcontainer.json
+│   ├── devcontainer.json
+│   └── Dockerfile
 ├── .vscode/
 │   ├── extensions.json
 │   ├── launch.json
