@@ -1,5 +1,8 @@
 {
   "recommendations": [
     "HochschuleCampusWien.c-lehrumgebung"
+  ],
+  "unwantedRecommendations": [
+    "ms-vscode.makefile-tools"
   ]
 }
