@@ -86,6 +86,148 @@ make --version
 └── README.md
 ```
 
+## Projekte mit mehreren C-Dateien
+
+Sobald ein Programm größer wird, sollte es in mehrere Module aufgeteilt werden. Ein mögliches Projekt sieht dann so aus:
+
+```text
+.
+├── include/
+│   └── greeting.h
+├── src/
+│   ├── greeting.c
+│   └── main.c
+└── Makefile
+```
+
+Jede `.c`-Datei ist eine eigene Übersetzungseinheit. Damit daraus ein gemeinsames Programm entsteht, müssen alle `.c`-Dateien kompiliert und anschließend zusammen gelinkt werden.
+
+### Einfache Variante für kleine Projekte
+
+Für wenige Dateien können die Quellen direkt im Makefile aufgelistet werden:
+
+```make
+CC := gcc
+CPPFLAGS := -Iinclude
+CFLAGS := -std=c17 -Wall -Wextra -Wpedantic -Wconversion -g
+TARGET := build/hello
+SOURCES := src/main.c src/greeting.c
+HEADERS := include/greeting.h
+
+.PHONY: all build run clean
+
+all: build
+
+build: $(TARGET)
+
+$(TARGET): $(SOURCES) $(HEADERS)
+	mkdir -p build
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(SOURCES) -o $(TARGET)
+
+run: build
+	./$(TARGET)
+
+clean:
+	rm -rf build
+```
+
+Wird eine weitere Implementierungsdatei ergänzt, muss sie auch in `SOURCES` eingetragen werden:
+
+```make
+SOURCES := src/main.c src/greeting.c src/calculator.c
+```
+
+Diese einfache Variante übersetzt bei jeder Änderung alle Quelldateien neu. Für kleine Übungsprojekte ist das übersichtlich und normalerweise schnell genug.
+
+## Header-Dateien
+
+Header beschreiben die öffentliche Schnittstelle eines Moduls. Sie enthalten insbesondere Funktionsdeklarationen, Typdefinitionen und Konstanten. Die eigentliche Implementierung gehört in die zugehörige `.c`-Datei.
+
+`include/greeting.h`:
+
+```c
+#ifndef GREETING_H
+#define GREETING_H
+
+void print_greeting(void);
+
+#endif
+```
+
+`src/greeting.c`:
+
+```c
+#include "greeting.h"
+
+#include <stdio.h>
+
+void print_greeting(void)
+{
+    printf("Hello, World!\n");
+}
+```
+
+`src/main.c`:
+
+```c
+#include "greeting.h"
+
+int main(void)
+{
+    print_greeting();
+    return 0;
+}
+```
+
+Dabei ist Folgendes zu beachten:
+
+- Header werden mit `#include "greeting.h"` eingebunden, aber nicht selbst kompiliert.
+- `-Iinclude` teilt dem Präprozessor mit, wo projektspezifische Header liegen.
+- Include-Guards wie `#ifndef GREETING_H` verhindern eine mehrfache Verarbeitung desselben Headers.
+- Funktionsimplementierungen gehören normalerweise nicht in Header-Dateien.
+- Globale Variablen sollten in Headern höchstens mit `extern` deklariert und genau einmal in einer `.c`-Datei definiert werden.
+- Jede `.c`-Datei sollte den Header ihres eigenen Moduls einbinden. So erkennt der Compiler abweichende Deklarationen frühzeitig.
+- Wird ein Header geändert, müssen alle davon abhängigen Quelldateien neu übersetzt werden.
+
+In der einfachen Makefile-Variante werden die Header deshalb in `HEADERS` eingetragen. Eine Headeränderung baut dadurch sicherheitshalber das gesamte Programm neu.
+
+### Skalierbare Variante mit Objektdateien
+
+Bei größeren Projekten sollte jede `.c`-Datei zunächst in eine eigene Objektdatei übersetzt werden. `-MMD -MP` erzeugt dabei automatisch Abhängigkeitsdateien für verwendete Header:
+
+```make
+CC := gcc
+CPPFLAGS := -Iinclude
+CFLAGS := -std=c17 -Wall -Wextra -Wpedantic -Wconversion -g -MMD -MP
+TARGET := build/hello
+SOURCES := $(wildcard src/*.c)
+OBJECTS := $(patsubst src/%.c,build/%.o,$(SOURCES))
+DEPENDENCIES := $(OBJECTS:.o=.d)
+
+.PHONY: all build run clean
+
+all: build
+
+build: $(TARGET)
+
+$(TARGET): $(OBJECTS)
+	$(CC) $(OBJECTS) -o $@
+
+build/%.o: src/%.c
+	mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
+
+run: build
+	./$(TARGET)
+
+clean:
+	rm -rf build
+
+-include $(DEPENDENCIES)
+```
+
+Damit werden nach einer Änderung nur die betroffenen `.c`-Dateien neu kompiliert. Neue Dateien unter `src/` werden durch `wildcard` automatisch berücksichtigt. Für den Einstieg reicht die einfache Variante; Objektdateien und automatische Abhängigkeiten sind der nächste sinnvolle Schritt bei wachsenden Projekten.
+
 ## Aufräumen
 
 ```bash
