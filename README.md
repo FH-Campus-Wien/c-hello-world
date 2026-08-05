@@ -234,9 +234,13 @@ Damit werden nach einer Änderung nur die betroffenen `.c`-Dateien neu kompilier
 make clean
 ```
 
-## Erstellungshinweis
+## Verantwortlichkeit und Erstellung
 
-Dieses Starterprojekt und seine Dokumentation wurden mit Unterstützung von **OpenAI Codex** erstellt. Konfiguration, Build und Beispielprogramm wurden vor der Veröffentlichung technisch geprüft.
+**Konzeption, fachliche Verantwortung und Pflege:**
+
+Michael Strommer, Hochschule Campus Wien
+
+Dieses Starterprojekt und seine Dokumentation wurden mit Unterstützung von **OpenAI Codex** umgesetzt. Konfiguration, Build und Inhalte wurden vor der Veröffentlichung technisch und fachlich geprüft.
 
 ## Lizenz
 
