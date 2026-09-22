@@ -76,8 +76,31 @@ make debug ARGS="Hallo 123"
 ```
 
 Der Container enthält **GDB**. `lldb` ist im bewusst schlank gehaltenen
-Container nicht installiert. Nach dem Start von GDB helfen für den Einstieg
-beispielsweise `break main`, `run`, `next`, `print VARIABLE` und `quit`.
+Container nicht installiert. Nach `make debug` können Breakpoints beispielsweise
+beim Einstieg in `main` oder in einer bestimmten Quellcodezeile gesetzt werden:
+
+```gdb
+break main
+break src/main.c:15
+run
+```
+
+Nützliche GDB-Befehle sind:
+
+```gdb
+next              # nächste Zeile, aufgerufene Funktionen nicht betreten
+step              # nächste Zeile, aufgerufene Funktionen betreten
+continue          # bis zum nächsten Breakpoint weiterlaufen
+print variable    # Wert einer Variable ausgeben
+info locals       # lokale Variablen anzeigen
+info breakpoints  # gesetzte Breakpoints anzeigen
+delete 1          # Breakpoint Nummer 1 löschen
+quit              # GDB beenden
+```
+
+In Visual Studio Code genügt ein Klick links neben die gewünschte Zeilennummer.
+Der rote Punkt markiert den Breakpoint. Mit `F5` startet die grafische
+Debug-Sitzung; VS Code verwendet dafür im Container ebenfalls GDB.
 
 ## Umgebung überprüfen
 
