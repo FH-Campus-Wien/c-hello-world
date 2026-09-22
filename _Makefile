@@ -1,0 +1,53 @@
+# Fortgeschrittene Makefile-Variante für Projekte mit mehreren C-Dateien.
+#
+# Diese Datei heißt absichtlich `_Makefile`, damit `make` sie nicht automatisch
+# verwendet. Zum Ausprobieren kann sie explizit aufgerufen werden:
+#
+#   make -f _Makefile
+#   make -f _Makefile run
+#   make -f _Makefile debug ARGS="Hallo 123"
+#   make -f _Makefile clean
+#
+# Alternativ kann das einfache `Makefile` später durch diese Variante ersetzt
+# werden. Dazu `_Makefile` in `Makefile` umbenennen.
+#
+# Alle C-Dateien unter `src/` werden automatisch gefunden und einzeln in
+# Objektdateien unter `build/` übersetzt. Die Optionen `-MMD -MP` erzeugen zu
+# jeder Objektdatei eine `.d`-Datei. Darin hält GCC fest, von welchen eigenen
+# Headern die jeweilige C-Datei abhängt. Dadurch kompiliert `make` nach einer
+# Änderung nur die tatsächlich betroffenen Dateien neu.
+
+CC := gcc
+CPPFLAGS := -Iinclude
+CFLAGS := -std=c17 -Wall -Wextra -Wpedantic -Wconversion -g -MMD -MP
+
+TARGET := build/hello
+SOURCES := $(wildcard src/*.c)
+OBJECTS := $(patsubst src/%.c,build/%.o,$(SOURCES))
+DEPENDENCIES := $(OBJECTS:.o=.d)
+
+ARGS :=
+
+.PHONY: all build run debug clean
+
+all: build
+
+build: $(TARGET)
+
+$(TARGET): $(OBJECTS)
+	$(CC) $(OBJECTS) -o $@
+
+build/%.o: src/%.c
+	mkdir -p $(dir $@)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
+
+run: build
+	./$(TARGET) $(ARGS)
+
+debug: build
+	gdb --args ./$(TARGET) $(ARGS)
+
+clean:
+	rm -rf build
+
+-include $(DEPENDENCIES)
