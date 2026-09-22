@@ -37,6 +37,15 @@ make
 make run
 ```
 
+Kommandozeilenargumente können über die Make-Variable `ARGS` übergeben werden:
+
+```bash
+make run ARGS="Hallo 123"
+```
+
+Die Anführungszeichen sorgen dafür, dass Make den gesamten Wert übernimmt. Das
+Programm erhält in diesem Beispiel zwei Argumente: `Hallo` und `123`.
+
 Oder über Visual Studio Code:
 
 - `Strg/Cmd + Umschalt + B` baut das Programm.
@@ -58,6 +67,17 @@ Das erzeugte Programm liegt unter `build/hello`.
 4. **C: Hello World debuggen** auswählen, falls Visual Studio Code nach einer Konfiguration fragt.
 
 Vor dem Debugging wird das Programm automatisch mit Debug-Symbolen gebaut.
+
+Alternativ kann GDB direkt über das Makefile gestartet werden:
+
+```bash
+make debug
+make debug ARGS="Hallo 123"
+```
+
+Der Container enthält **GDB**. `lldb` ist im bewusst schlank gehaltenen
+Container nicht installiert. Nach dem Start von GDB helfen für den Einstieg
+beispielsweise `break main`, `run`, `next`, `print VARIABLE` und `quit`.
 
 ## Umgebung überprüfen
 
@@ -113,8 +133,9 @@ CFLAGS := -std=c17 -Wall -Wextra -Wpedantic -Wconversion -g
 TARGET := build/hello
 SOURCES := src/main.c src/greeting.c
 HEADERS := include/greeting.h
+ARGS :=
 
-.PHONY: all build run clean
+.PHONY: all build run debug clean
 
 all: build
 
@@ -125,7 +146,10 @@ $(TARGET): $(SOURCES) $(HEADERS)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(SOURCES) -o $(TARGET)
 
 run: build
-	./$(TARGET)
+	./$(TARGET) $(ARGS)
+
+debug: build
+	gdb --args ./$(TARGET) $(ARGS)
 
 clean:
 	rm -rf build
@@ -203,8 +227,9 @@ TARGET := build/hello
 SOURCES := $(wildcard src/*.c)
 OBJECTS := $(patsubst src/%.c,build/%.o,$(SOURCES))
 DEPENDENCIES := $(OBJECTS:.o=.d)
+ARGS :=
 
-.PHONY: all build run clean
+.PHONY: all build run debug clean
 
 all: build
 
@@ -218,7 +243,10 @@ build/%.o: src/%.c
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
 
 run: build
-	./$(TARGET)
+	./$(TARGET) $(ARGS)
+
+debug: build
+	gdb --args ./$(TARGET) $(ARGS)
 
 clean:
 	rm -rf build
