@@ -61,12 +61,34 @@ Das erzeugte Programm liegt unter `build/hello`.
 
 ## Debuggen
 
+### Grafisch mit Visual Studio Code
+
+Das Repository enthält bereits die Debug-Konfiguration
+`.vscode/launch.json`. Sie verbindet die grafische Debug-Oberfläche von Visual
+Studio Code mit GDB im Dev Container und startet vor jeder Debug-Sitzung über
+`preLaunchTask` automatisch den Build.
+
 1. `src/main.c` öffnen.
-2. Links neben einer Codezeile einen Breakpoint setzen.
+2. Links neben die gewünschte Zeilennummer klicken. Ein roter Punkt zeigt den
+   gesetzten Breakpoint an.
 3. `F5` drücken.
 4. **C: Hello World debuggen** auswählen, falls Visual Studio Code nach einer Konfiguration fragt.
+5. Über die Debug-Symbolleiste das Programm fortsetzen, schrittweise ausführen
+   oder beenden. Variablen und Aufrufliste erscheinen links in der
+   Debug-Ansicht.
 
 Vor dem Debugging wird das Programm automatisch mit Debug-Symbolen gebaut.
+Für die grafische Debug-Sitzung werden Programmargumente in
+`.vscode/launch.json` unter `args` eingetragen, beispielsweise:
+
+```json
+"args": ["Hallo", "123"]
+```
+
+Die Make-Variable `ARGS` gilt dagegen für `make run` und `make debug` im
+Terminal.
+
+### Im Terminal mit GDB
 
 Alternativ kann GDB direkt über das Makefile gestartet werden:
 
@@ -97,10 +119,6 @@ info breakpoints  # gesetzte Breakpoints anzeigen
 delete 1          # Breakpoint Nummer 1 löschen
 quit              # GDB beenden
 ```
-
-In Visual Studio Code genügt ein Klick links neben die gewünschte Zeilennummer.
-Der rote Punkt markiert den Breakpoint. Mit `F5` startet die grafische
-Debug-Sitzung; VS Code verwendet dafür im Container ebenfalls GDB.
 
 ## Umgebung überprüfen
 
