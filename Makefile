@@ -1,7 +1,15 @@
 CC := gcc
+CPPFLAGS := -Iinclude
 CFLAGS := -std=c17 -Wall -Wextra -Wpedantic -Wconversion -g
+
 TARGET := build/hello
-SOURCE := src/main.c
+
+# Weitere Dateien hier mit Leerzeichen getrennt ergänzen, zum Beispiel:
+# SOURCES := src/main.c src/minmax.c
+# HEADERS := include/minmax.h
+SOURCES := src/main.c
+HEADERS :=
+
 ARGS :=
 
 .PHONY: all build run debug clean
@@ -10,9 +18,9 @@ all: build
 
 build: $(TARGET)
 
-$(TARGET): $(SOURCE)
+$(TARGET): $(SOURCES) $(HEADERS)
 	mkdir -p build
-	$(CC) $(CFLAGS) $(SOURCE) -o $(TARGET)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(SOURCES) -o $(TARGET)
 
 run: build
 	./$(TARGET) $(ARGS)
